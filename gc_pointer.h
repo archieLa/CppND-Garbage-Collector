@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include "gc_details.h"
 #include "gc_iterator.h"
+
 /*
     Pointer implements a pointer type that uses
     garbage collection to release unused memory.
@@ -12,36 +13,40 @@
     When used to refer to an allocated array,
     specify the array size.
 */
+
 template <class T, int size = 0>
-class Pointer{
+class Pointer
+{
+
 private:
     // refContainer maintains the garbage collection list.
     static std::list<PtrDetails<T> > refContainer;
+    
     // addr points to the allocated memory to which
     // this Pointer pointer currently points.
-    T *addr;
-    /*  isArray is true if this Pointer points
-        to an allocated array. It is false
-        otherwise. 
-    */
-    bool isArray; 
-    // true if pointing to array
-    // If this Pointer is pointing to an allocated
-    // array, then arraySize contains its size.
-    unsigned arraySize; // size of the array
+    T *addr_ = nullptr;
+
+    bool isArray = false;
+    unsigned arraySize = 0; // size of the array
+    
     static bool first; // true when first Pointer is created
+    
     // Return an iterator to pointer details in refContainer.
     typename std::list<PtrDetails<T> >::iterator findPtrInfo(T *ptr);
+
 public:
     // Define an iterator type for Pointer<T>.
     typedef Iter<T> GCiterator;
     // Empty constructor
     // NOTE: templates aren't able to have prototypes with default arguments
     // this is why constructor is designed like this:
-    Pointer(){
-        Pointer(NULL);
+    Pointer()
+    {
+        Pointer(nullptr);
     }
+
     Pointer(T*);
+    
     // Copy constructor.
     Pointer(const Pointer &);
     // Destructor for Pointer.
@@ -112,7 +117,8 @@ Pointer<T,size>::Pointer(T *t){
 }
 // Copy constructor.
 template< class T, int size>
-Pointer<T,size>::Pointer(const Pointer &ob){
+Pointer<T,size>::Pointer(const Pointer &ob)
+{
 
     // TODO: Implement Pointer constructor
     // Lab: Smart Pointer Project Lab
@@ -121,7 +127,8 @@ Pointer<T,size>::Pointer(const Pointer &ob){
 
 // Destructor for Pointer.
 template <class T, int size>
-Pointer<T, size>::~Pointer(){
+Pointer<T, size>::~Pointer()
+{
     
     // TODO: Implement Pointer destructor
     // Lab: New and Delete Project Lab
@@ -130,7 +137,8 @@ Pointer<T, size>::~Pointer(){
 // Collect garbage. Returns true if at least
 // one object was freed.
 template <class T, int size>
-bool Pointer<T, size>::collect(){
+bool Pointer<T, size>::collect()
+{
 
     // TODO: Implement collect function
     // LAB: New and Delete Project Lab
@@ -140,7 +148,8 @@ bool Pointer<T, size>::collect(){
 
 // Overload assignment of pointer to Pointer.
 template <class T, int size>
-T *Pointer<T, size>::operator=(T *t){
+T *Pointer<T, size>::operator=(T *t)
+{
 
     // TODO: Implement operator==
     // LAB: Smart Pointer Project Lab
@@ -148,16 +157,19 @@ T *Pointer<T, size>::operator=(T *t){
 }
 // Overload assignment of Pointer to Pointer.
 template <class T, int size>
-Pointer<T, size> &Pointer<T, size>::operator=(Pointer &rv){
+Pointer<T, size> &Pointer<T, size>::operator=(Pointer &rv)
+{
 
     // TODO: Implement operator==
     // LAB: Smart Pointer Project Lab
+
 
 }
 
 // A utility function that displays refContainer.
 template <class T, int size>
-void Pointer<T, size>::showlist(){
+void Pointer<T, size>::showlist()
+{
     typename std::list<PtrDetails<T> >::iterator p;
     std::cout << "refContainer<" << typeid(T).name() << ", " << size << ">:\n";
     std::cout << "memPtr refcount value\n ";
@@ -165,6 +177,7 @@ void Pointer<T, size>::showlist(){
     {
         std::cout << " Container is empty!\n\n ";
     }
+    
     for (p = refContainer.begin(); p != refContainer.end(); p++)
     {
         std::cout << "[" << (void *)p->memPtr << "]"
@@ -177,27 +190,43 @@ void Pointer<T, size>::showlist(){
     }
     std::cout << std::endl;
 }
-// Find a pointer in refContainer.
+
+// Find a pointer in refContainer
+// Returns iterator pointing to end element of container if not found
 template <class T, int size>
-typename std::list<PtrDetails<T> >::iterator
-Pointer<T, size>::findPtrInfo(T *ptr){
+typename std::list<PtrDetails<T> >::iterator Pointer<T, size>::findPtrInfo(T *ptr)
+{
     typename std::list<PtrDetails<T> >::iterator p;
+    
     // Find ptr in refContainer.
     for (p = refContainer.begin(); p != refContainer.end(); p++)
+    {
         if (p->memPtr == ptr)
+        {
             return p;
+        }
+    }
+    // Return end of the container indicating pointer was not found
     return p;
 }
+
 // Clear refContainer when program exits.
 template <class T, int size>
-void Pointer<T, size>::shutdown(){
+void Pointer<T, size>::shutdown()
+{
     if (refContainerSize() == 0)
-        return; // list is empty
+    {
+        return;
+    }
+        
     typename std::list<PtrDetails<T> >::iterator p;
+    
     for (p = refContainer.begin(); p != refContainer.end(); p++)
     {
         // Set all reference counts to zero
         p->refcount = 0;
     }
+    
     collect();
+
 }
