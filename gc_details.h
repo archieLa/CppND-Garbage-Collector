@@ -7,13 +7,13 @@ class PtrDetails
     public:
         size_t ref_count_ = 0;
         T *mem_ptr_ = nullptr;
-        bool is_Array_ = false; 
-        size_t arraySize = 0;
+        bool is_array_ = false; 
+        size_t array_size_ = 0;
     
-        explicit PtrDetails(T* obj_ptr, size_t arr_size = 0) : mem_ptr_(obj_ptr), arr_size_(arr_size),
-        is_arr_(arr_size > 0) noexcept
+        explicit PtrDetails(T* obj_ptr, size_t arr_size = 0) noexcept : mem_ptr_(obj_ptr), array_size_(arr_size)
         {
-            ref_count++;
+            is_array_ = (arr_size > 0);
+            ref_count_++;
         }
 
     private:
@@ -21,7 +21,6 @@ class PtrDetails
         PtrDetails& operator=(const PtrDetails&) = delete;
     
 };
-
 
 // This is needed by the STL list class.
 template <class T>
