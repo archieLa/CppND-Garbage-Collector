@@ -18,148 +18,132 @@ template <class T>
 class Iter
 {
    private: 
-    T *ptr;
-    T *end;
+        T *ptr_;
+        T *end_;
 
-    T *begin;           // points to start of allocated array
-    size_t length;      
+        T *begin_;           // points to start of allocated array
+        size_t length_;      
   
-  public:
-    
-    Iter()
-    {
-        ptr = end = begin = NULL;
-        length = 0;
-    }
-
-    Iter(T *p, T *first, T *last)
-    {
-        ptr = p;
-        end = last;
-        begin = first;
-        length = last - first;
-    }
-
-    // Return length of sequence to which this
-    // Iter points.
-    size_t size() 
-    { 
-        return length;
-    }
-    
-    // Return value pointed to by ptr.
-    // Do not allow out-of-bounds access.
-    T &operator*()
-    {
-        if ((ptr >= end) || (ptr < begin))
+    public:   
+        Iter()
         {
-            throw OutOfRangeExc();
+            ptr_ = nullptr;
+            end_ = nullptr;
+            begin_ = NULL;
+            length_ = 0;
         }
-        return *ptr;
-    }
 
-    // Return address contained in ptr.
-    // Do not allow out-of-bounds access.
-    T *operator->()
-    {
-        if ((ptr >= end) || (ptr < begin))
+        Iter(const T *p, const T *first, const T *last)
         {
-            throw OutOfRangeExc();
-        }       
-        return ptr;
-    }
+            ptr_ = p;
+            end_ = last;
+            begin_ = first;
+            length_ = last - first;
+        }
 
-    // Prefix ++.
-    Iter operator++()
-    {
-        ptr++;
-        return *this;
-    }
-
-    // Prefix --.
-    Iter operator--()
-    {
-        ptr--;
-        return *this;
-    }
-
-    // Postfix ++.
-    Iter operator++(int notused)
-    {
-        T *tmp = ptr;
-        ptr++;
-        return Iter<T>(tmp, begin, end);
-    }
-
-    // Postfix --.
-    Iter operator--(int notused)
-    {
-        T *tmp = ptr;
-        ptr--;
-        return Iter<T>(tmp, begin, end);
-    }
-
-    // Return a reference to the object at the
-    // specified index. Do not allow out-of-bounds
-    // access.
-    T &operator[](size_t i)
-    {
-        if ((i < 0) || (i >= (end - begin)))
+        // Return length of sequence to which this
+        // Iter points.
+        size_t size() 
+        {    
+            return length_;
+        }
+    
+        // Return value pointed to by ptr.
+        // Do not allow out-of-bounds access.
+        T &operator*()
         {
-            throw OutOfRangeExc();
-        }         
-        return ptr[i];
-    }
+            if ((ptr_ >= end_) || (ptr_ < begin_))
+            {
+                throw std::out_of_range("Invalid access");
+            }
+            return *ptr_;
+        }
 
-    // Define the relational operators.
-    bool operator==(Iter op2)
-    {
-        return ptr == op2.ptr;
-    }
+        // Return address contained in ptr.
+        // Do not allow out-of-bounds access.
+        T* operator->()
+        {
+            if ((ptr_ >= end_) || (ptr_ < begin_))
+            {
+                throw std::out_of_range("Invalid access");
+            }       
+            return ptr_;
+        }
 
-    bool operator!=(Iter op2)
-    {
-        return ptr != op2.ptr;
-    }
+        // Prefix ++.
+        Iter operator++()
+        {
+            ptr_++;
+            return *this;
+        }
 
-    bool operator<(Iter op2)
-    {
-        return ptr < op2.ptr;
-    }
+        // Prefix --.
+        Iter operator--()
+        {
+            ptr_--;
+            return *this;
+        }
 
-    bool operator<=(Iter op2)
-    {
-        return ptr <= op2.ptr;
-    }
+        // Return a reference to the object at the
+        // specified index. Do not allow out-of-bounds
+        // access.
+        T& operator[](size_t i)
+        {
+            if ((i < 0) || (i >= (end_ - begin_)))
+            {
+                std::out_of_range("Invalid access");
+            }         
+            return ptr_[i];
+        }
 
-    bool operator>(Iter op2)
-    {
-        return ptr > op2.ptr;
-    }
+        // Define the relational operators.
+        bool operator==(const Iter& op2)
+        {
+            return ptr_ == op2.ptr_;
+        }
 
-    bool operator>=(Iter op2)
-    {
-        return ptr >= op2.ptr;
-    }
+        bool operator!=(const Iter<T>& op2)
+        {
+            return ptr_ != op2.ptr_;
+        }
 
-    // Subtract an integer from an Iter.
-    Iter operator-(int n)
-    {
-        ptr -= n;
-        return *this;
-    }
+        bool operator<(const Iter<T>& op2)
+        {
+            return ptr_ < op2.ptr_;
+        }
 
-    // Add an integer to an Iter.
-    Iter operator+(int n)
-    {
-        ptr += n;
-        return *this;
-    }
+        bool operator<=(const Iter<T>& op2)
+        {
+            return ptr_ <= op2.ptr_;
+        }
 
-    // Return number of elements between two Iters.
-    int operator-(Iter<T> &itr2)
-    {
-        return ptr - itr2.ptr;
-    }
+        bool operator>(const Iter<T>& op2)
+        {
+            return ptr_ > op2.ptr_;
+        }
 
+        bool operator>=(const Iter<T>& op2)
+        {   
+            return ptr_ >= op2.ptr_;
+        }
+
+        // Subtract an integer from an Iter.
+        Iter operator-(int n)
+        {
+            ptr_ -= n;
+            return *this;
+        }   
+
+        // Add an integer to an Iter.
+        Iter operator+(int n)
+        {
+            ptr_ += n;
+            return *this;
+        }
+
+        // Return number of elements between two Iters.
+        int operator-(const Iter<T>& itr2)
+        {
+            return ptr_ - itr2.ptr_;
+        }
 };
